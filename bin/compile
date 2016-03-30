@@ -1,4 +1,37 @@
 #!/usr/bin/env bash
 
-# node_modules should already be on the path
-elm-package install -y
+BUILD_DIR=${1:-}
+CACHE_DIR=${2:-}
+ENV_DIR=${3:-}
+
+indent() {
+  sed -u 's/^/       /'
+}
+
+restore_cache() {
+  if [ -e "$BUILD_DIR/elm-stuff" ]; then
+    echo "- skipping cache restore, exists" | indent
+  else
+    if [ -e "$CACHE_DIR/elm-stuff" ]; then
+      echo "- restoring cache" | indent
+      mv "$CACHE_DIR/elm-stuff" "$BUILD_DIR"
+    else
+      echo "- no cache detected" | indent
+    fi
+  fi
+}
+
+cache_build() {
+  cp -R "$BUILD_DIR/elm-stuff" "$CACHE_DIR"
+}
+
+install_binaries() {
+  # node_modules should already be on the path
+  cd "$BUILD_DIR" && elm-package install -y | indent
+}
+
+
+
+restore_cache
+install_binaries
+cache_build
