@@ -30,4 +30,6 @@ install_binaries() {
   cd "$BUILD_DIR" && npm install elm && elm-package install -y | indent
 }
 
+ls
+pwd
 elm make src/Main.elm --output static/main.js
